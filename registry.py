@@ -11,6 +11,7 @@ def choose_files():
         if f.endswith(".wav"):
             only_wave_files.append(f)
 
+    print('*'*15, 'List Of Files','*'*15)
     for i, file in enumerate(only_wave_files):
         print('%d\t->\t%s' % (i, file))
 
@@ -19,7 +20,7 @@ def choose_files():
     wybór pliku
     '''''
 
-    choice = int(input("\nChoose file 1 [preferably oryginal]: "))
+    choice = int(input("\nChoose file: "))
     print('Choosen file: %s' % only_wave_files[choice])
 
     choice = os.path.join(DIRECTORY, only_wave_files[choice])
