@@ -4,33 +4,33 @@ from registry import choose_files
 import os
 
 
+
+
 class Data:
     file = 'Empty'
     t60 = None
     colour = None
 
-    def choose_file(self):
-        '''''
-        Odczyt plików w tym samym folderze, co projekt
-        '''''
+    @staticmethod
+    def listfiles():
         list_of_files = os.listdir(DIRECTORY)
         only_wave_files = list()
         for i, f in enumerate(list_of_files):
             if f.endswith(".wav"):
                 only_wave_files.append(f)
+        return only_wave_files
 
+    # @staticmethod
+    def print_lof(self):
         print('*' * 15, 'List Of Files', '*' * 15)
-        for i, file in enumerate(only_wave_files):
+        for i, file in enumerate(Data.listfiles()):
             print('%d\t->\t%s' % (i, file))
 
-        '''''
-        wybór pliku
-        '''''
+    def choose_file(self):
+        lof = Data.listfiles()
+        self.print_lof()
+        self.file = os.path.join(DIRECTORY, lof[int(input("\nChoose file: "))])
 
-        choice = int(input("\nChoose file: "))
-        print('Choosen file: %s' % only_wave_files[choice])
-        self.file = os.path.join(DIRECTORY, only_wave_files[choice])
-        # print(self.file)
     def get_file(self):
         return self.file
 
@@ -40,6 +40,10 @@ class Data:
         'blank': None
     }
 
+
+new_file = Data
+
+
 def update():
     return {
             1: new_file.file,
@@ -47,7 +51,6 @@ def update():
             3: new_file.colour
             }
 
-new_file = Data
 
 current_task = -1
 
