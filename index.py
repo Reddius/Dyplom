@@ -3,39 +3,35 @@ from variables import *
 from registry import choose_files
 import os
 
+import tkinter as tk
+from tkinter import filedialog
+
+root = tk.Tk()
+
+canvas1 = tk.Canvas(root, width=300, height=300, bg='white')
+canvas1.pack()
 
 
+def get_path():
+
+    import_file_path = filedialog.askopenfilename()
+
+    return import_file_path
+
+def open_wav():
+    browseButton_Excel = tk.Button(text='Choose file', command=get_path, bg='red', fg='white',
+                                   font=('helvetica', 12, 'bold'))
+    canvas1.create_window(150, 150, window=browseButton_Excel)
+    root.mainloop()
 
 class Data:
     file = 'Empty'
     t60 = None
     colour = None
 
-    @staticmethod
-    def listfiles():
-        list_of_files = os.listdir(DIRECTORY)
-        only_wave_files = list()
-        for i, f in enumerate(list_of_files):
-            if f.endswith(".wav"):
-                only_wave_files.append(f)
-        return only_wave_files
-
-    # @staticmethod
-    def print_lof(self):
-        print('*' * 15, 'List Of Files', '*' * 15)
-        for i, file in enumerate(Data.listfiles()):
-            print('%d\t->\t%s' % (i, file))
-
-    def choose_file(self):
-        lof = Data.listfiles()
-        self.print_lof()
-        self.file = os.path.join(DIRECTORY, lof[int(input("\nChoose file: "))])
-
-    def get_file(self):
-        return self.file
 
     main_menu = {
-        'read_file': choose_file,
+        'read_file': open_wav,
         'T60': None,
         'blank': None
     }
@@ -66,6 +62,8 @@ new_file.main_menu_values = {
 
 values = new_file.main_menu_values
 
+
+
 while True:
 
     # show all  functions
@@ -84,7 +82,7 @@ while True:
         for i, option in enumerate(menu.keys()):
             if i+1 == current_task:
 
-                menu[option](new_file)  # wywołaj funkcję z menu
+                menu[option]()  # wywołaj funkcję z menu
                 # except TypeError:
                 #     print("Ths option is not a function")
     values = update()
