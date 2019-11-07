@@ -3,15 +3,21 @@ from registry import *
 from plot import *
 import wave
 from variables import *
-
+from tkinter import filedialog
 
 data = list()
 label = list()
 
+def get_path():
+
+    import_file_path = filedialog.askopenfilename()
+
+    return import_file_path
+
 
 def read_file():
-    choice = choose_files()
-    w = wave.open(choice, 'r')
+    # choice = choose_files(DIRECTORY)
+    w = wave.open(get_path(), 'r')
 
     frames = w.readframes(-1)
 
@@ -79,23 +85,45 @@ print("-30dB-> at: " + str(db30) + "ms")
 print("-60dB-> at: " + str(db30+(db30-db0)) + "ms [extrapolated]")
 print("T30------>: " + str((db30-db0)*2) + "ms")
 
-new = np.zeros_like(integral)
-for i, val in enumerate(new):
-    new[i] = -60
-
 x1 = int((db30o)*FP)                    # spadek  o 30dB
 x2 = int((db0o)*FP)                     # odniesienie
 x3 = int((db0o+((db30o-db0o)*2))*FP)    # spadek o 60dB szacowany
 print(x1)
 print(x2)
 print(x3)
+
+# czy tablica jest za mała aby pokazać spadek o 60 db
+if x3+1>len(integral):
+    arrayToSmall = True
+else:
+    arrayToSmall = False
+
+if arrayToSmall:    # przypadek gdy -60db jest poza wykresem  - ppowiększ tablicę
+
+    new = np.full(x3+1, -60)
+    new_integral = np.full_like(new, -60)
+    # kopiuj wartości całki
+    for i, val in enumerate(integral):
+        new_integral[i] = integral[i]
+    time = np.linspace(0, len(new_integral) / FP, num=len(new_integral))
+
+else:   # normalny tryb (bez dopasowania wielkośc tablic)
+    new = np.full_like(integral, -60)
+
 # naniesione punkty na osi
 new[x1] = 1
 new[x2] = 1
 new[x3] = 1
 
 plot_wav(data, label)
-plt.plot(time*6, integral, 'b', time*6, new, 'r--')
+
+
+if arrayToSmall:
+
+    plt.plot(time * 6, new_integral, 'b', time * 6, new, 'r--')
+else:
+    plt.plot(time * 6, integral, 'b', time * 6, new, 'r--')
+
 plt.xlabel('time (s)')
 plt.ylabel("dB")
 plt.title("Spadek o 30dB w %dms [dB=0 w %dms] => T30= %dms" % (db30-db0, db0, (db30-db0)*2))

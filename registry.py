@@ -1,11 +1,11 @@
 import os
 from variables import *
 
-def choose_files():
+def choose_files(curr_dirr):
     '''''
     Odczyt plików w tym samym folderze, co projekt
     '''''
-    list_of_files = os.listdir(DIRECTORY)
+    list_of_files = os.listdir(curr_dirr)
     only_wave_files = list()
     for i, f in enumerate(list_of_files):
         if f.endswith(".wav"):

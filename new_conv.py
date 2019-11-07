@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import wave
 import simpleaudio as sa
+from variables import *
 """
 Moduł nakładający odpowiedź impulsową na nagranie
 
@@ -11,8 +12,7 @@ Moduł nakładający odpowiedź impulsową na nagranie
 #
 # orig = wavfile.read('./data/conv/orig.wav')
 # ir = wavfile.read('./data/conv/ir.wav')
-ORIG  = './data/conv/orig.wav'
-IR = './data/conv/ir.wav'
+
 
 # o = wave.open('./data/conv/orig.wav', 'r')
 
@@ -119,31 +119,26 @@ najlepsza wersja conv
 """
 def nextpow2(L):
     N = 2
-    while N < L: N = N * 2
+    while N < L: N *= 2
     return N
 
-# from FFT import fft, inverse_fft
 
-def fast_conv_vect(x, h):
-    # searches for the amount of points required to perform the FFT
+def convolution(x, h):
+
     L = len(h) + len(x) - 1  # linear convolution length
     N = nextpow2(L)
-    # Note: N>=L is needed because the IDFT of the multiplication is the circular convolution and to match it to the
-    # common one, N>=L is required (where L=N1+N2-1;N1=length(x);N2=length(h))
 
-    # FFT(X,N) is the N points FFT, with zero padding if X has less than N points and truncated if has more.
-    # x= x*np.blackman(len(x))
-    # h = h*np.blackman(len(h))
     H = np.fft.rfft(h, N)  # Fourier transform of the impulse
     X = np.fft.rfft(x, N)  # Fourier transform of the input signal
 
     Y = H * X  # spectral multiplication
     y = np.fft.irfft(Y)  # time domain again
+
     y = np.array(y/(max(y)*1.001), dtype='float32')
     return y
 
 
-splot = fast_conv_vect(orig_file.RAW, IR_file.RAW)
+splot = convolution(orig_file.RAW, IR_file.RAW)
 
 plot(orig_file.RAW,IR_file.RAW,  splot)
 #
