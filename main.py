@@ -61,7 +61,7 @@ for i, val in enumerate(frames):
 data.append(f_squared)
 label.append("squared")
 
-#   odrotność - wynika ze wzoru
+#   odrotność
 f_squared = np.flip(f_squared)
 
 #   całka

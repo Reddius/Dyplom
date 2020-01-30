@@ -4,6 +4,7 @@ import numpy as np
 import wave
 import simpleaudio as sa
 from variables import *
+import scipy
 """
 Moduł nakładający odpowiedź impulsową na nagranie
 
@@ -52,8 +53,8 @@ def plot(toPlot, *args):
 
     plt.show()
 
-def timeLine(Y, fp):
-    return np.linspace(0, len(Y)/fp, num=len(Y))
+# def timeLine(Y, fp):
+#     return np.linspace(0, len(Y)/fp, num=len(Y))
 
 
 class Signal:
@@ -62,8 +63,12 @@ class Signal:
         self.timedomain = timeDomain
         self.data = file.RAW
         self.fp = file.FRAMERATE
+
+        def timeLine(Y, fp):
+            return np.linspace(0, len(Y) / fp, num=len(Y))
+
         if timeDomain:
-            self.time = timeLine(self.data, self.fp)
+            self.time = self.timeLine(self.data, self.fp)
         else:
             self.time = -1
 
@@ -124,21 +129,28 @@ def nextpow2(L):
 
 
 def convolution(x, h):
-
-    L = len(h) + len(x) - 1  # linear convolution length
+    L = len(x) - 1  # linear convolution length
+    # L = len(h) + len(x) - 1  # linear convolution length
     N = nextpow2(L)
 
     H = np.fft.rfft(h, N)  # Fourier transform of the impulse
     X = np.fft.rfft(x, N)  # Fourier transform of the input signal
+    H = H/max(H)
+    X = X/max(X)
+    for i, value in enumerate(H):
+        if H[i] < 0.1:
+            H[i]=1e-10
 
-    Y = H * X  # spectral multiplication
+    Y = X / H  # spectral multiplication
     y = np.fft.irfft(Y)  # time domain again
 
     y = np.array(y/(max(y)*1.001), dtype='float32')
     return y
 
 
-splot = convolution(orig_file.RAW, IR_file.RAW)
+IR_inverted = IR_file.RAW/max(IR_file.RAW)
+
+splot = convolution(orig_file.RAW, IR_inverted)
 
 plot(orig_file.RAW,IR_file.RAW,  splot)
 #
